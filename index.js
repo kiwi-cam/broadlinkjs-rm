@@ -459,6 +459,12 @@ class Device {
         this.emit('rawRFData', data);
         break;
       }
+      case 0xb1: { //RM4 get from check_data
+        const data = Buffer.alloc(payload.length - 4, 0);
+        payload.copy(data, 0, 6);
+        this.emit('rawData', data);
+        break;
+      }
       case 0xa: {
         const temp = (payload[0x6] * 100 + payload[0x7]) / 100.0;
         const humidity = (payload[0x8] * 100 + payload[0x9]) / 100.0;
@@ -475,7 +481,7 @@ class Device {
       case 0x1b: { //get from check_data
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x4);
-        //if (data[0] !== 0x1) break;
+        //if (data[0] !== 0x1) break; Check removed for RM4 RF Learning. Might need to restore an error check here
         this.emit('rawRFData2', data);
         break;
       }
