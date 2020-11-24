@@ -459,10 +459,8 @@ class Device {
         this.emit('rawRFData', data);
         break;
       }
-      case 0xb1: { //RM4 get from check_data
-        const data = Buffer.alloc(payload.length - 4, 0);
-        payload.copy(data, 0, 6);
-        this.emit('rawData', data);
+      case 0xb1: { //RM4 get RF from check_data
+        this.emit('rawData', payload);
         break;
       }
       case 0xa: {
