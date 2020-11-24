@@ -6,7 +6,7 @@ const assert = require('assert');
 
 // RM Devices (without RF support)
 const rmDeviceTypes = {};
-rmDeviceTypes[parseInt(0x2737, 16)] = "Broadlink RM Mini";
+rmDeviceTypes[parseInt(0x2737, 16)] = "Broadlink RM Mini 3";
 rmDeviceTypes[parseInt(0x27c7, 16)] = 'Broadlink RM Mini 3 A';
 rmDeviceTypes[parseInt(0x27c2, 16)] = "Broadlink RM Mini 3 B";
 rmDeviceTypes[parseInt(0x27de, 16)] = "Broadlink RM Mini 3 C";
