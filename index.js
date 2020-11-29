@@ -291,6 +291,7 @@ class Device {
     this.socket = socket;
 
     socket.on('message', (response) => {
+      if(response.length < 39) return;
       const encryptedPayload = Buffer.alloc(response.length - 0x38, 0);
       response.copy(encryptedPayload, 0, 0x38);
 
