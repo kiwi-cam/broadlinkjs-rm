@@ -457,7 +457,7 @@ class Device {
       case 0x9: { //RM4 get from check_data
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x6);
-        if (data[0] !== 0x1) break;
+        //if (data[0] !== 0x1) break;
         this.emit('rawRFData', data);
         break;
       }
