@@ -35,7 +35,6 @@ rmPlusDeviceTypes[parseInt(0x2223, 16)] = 'Manual RM Pro Device';
 // RM4 Devices (without RF support)
 const rm4DeviceTypes = {};
 rm4DeviceTypes[parseInt(0x51da, 16)] = "Broadlink RM4 Mini";
-rm4DeviceTypes[parseInt(0x5f36, 16)] = "Broadlink RM3 Mini";
 rm4DeviceTypes[parseInt(0x610e, 16)] = "Broadlink RM4 Mini";
 rm4DeviceTypes[parseInt(0x62bc, 16)] = "Broadlink RM4 Mini";
 rm4DeviceTypes[parseInt(0x653a, 16)] = "Broadlink RM4 Mini";
