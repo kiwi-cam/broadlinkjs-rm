@@ -270,7 +270,7 @@ class Device {
     this.code_sending_header = this.rm4Type ? new Buffer([0xda, 0x00]) : new Buffer([]);
     //except 5f36 ¯\_(ツ)_/¯
     if (deviceType == 0x5f36) {this.code_sending_header = new Buffer([0xd0, 0x00]);}
-    
+
     this.on = this.emitter.on;
     this.emit = this.emitter.emit;
     this.removeListener = this.emitter.removeListener;
