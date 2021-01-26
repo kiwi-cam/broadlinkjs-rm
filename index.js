@@ -435,7 +435,7 @@ class Device {
     packet[0x20] = checksum & 0xff;
     packet[0x21] = checksum >> 8;
 
-    if (debug) log('\x1b[33m[DEBUG]\x1b[0m (',this.mac.toString('hex'),') Command sent:',command.toString(16),' with Payload:',payload.toString('hex'))
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Command sent:${command.toString(16)} with Payload: ${payload.toString('hex')}`);
 
     socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
       if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err)
