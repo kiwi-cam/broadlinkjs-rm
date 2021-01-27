@@ -289,7 +289,7 @@ class Device {
     // Dynamically add relevant RF methods if the device supports it
     const isRFSupported = rmPlusDeviceTypes[parseInt(deviceType, 16)] || rm4PlusDeviceTypes[parseInt(deviceType, 16)];
     if (isRFSupported) {
-      this.log(`\x1b[35m[INFO]\x1b[0m Adding RF Support to device ${macAddress} with type ${deviceType.toString(16)}`);
+      this.log(`\x1b[35m[INFO]\x1b[0m Adding RF Support to device ${macAddress.toString('hex')} with type ${deviceType.toString(16)}`);
       this.addRFSupport();
     }
   }
