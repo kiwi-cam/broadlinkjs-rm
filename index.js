@@ -470,10 +470,7 @@ class Device {
       //  this.emit('rawRFData', data);
       //  break;
       //}
-      case 0xb0: { //RM4 RF Code found
-        this.emit('rawData', payload);
-        break;
-      }
+      case 0xb0: 
       case 0xb1: { //RM4 get RF from check_data
         this.emit('rawData', payload);
         break;
