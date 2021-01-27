@@ -318,7 +318,7 @@ class Device {
 
       if (!payload) return false;
 
-      if (debug) log('\x1b[33m[DEBUG]\x1b[0m Response received: ', response.toString('hex'));
+      if (debug && response) log('\x1b[33m[DEBUG]\x1b[0m Response received: ', response.toString('hex'));
 
       const command = response[0x26];
       if (command == 0xe9) {
@@ -412,6 +412,7 @@ class Device {
     packet[0x33] = this.id[3];
 
     if (payload){
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Sending command:${command.toString(16)} with payload: ${payload.toString('hex')}`);
       const padPayload = Buffer.alloc(16 - payload.length % 16, 0)
       payload = Buffer.concat([payload, padPayload]);
     }
@@ -438,8 +439,6 @@ class Device {
     packet[0x20] = checksum & 0xff;
     packet[0x21] = checksum >> 8;
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Command sent:${command.toString(16)} with Payload: ${payload.toString('hex')}`);
-
     socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
       if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err)
     });
@@ -449,7 +448,7 @@ class Device {
     const param = payload[0];
     const { log, debug } = this;
 
-    if (debug) log('\x1b[33m[DEBUG]\x1b[0m (',this.mac.toString('hex'),') Payload received:', payload.toString('hex'));
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Payload received:${payload.toString('hex')}`);
 
     switch (param) {
       case 0x1: {
@@ -463,14 +462,15 @@ class Device {
         this.emit('rawData', data);
         break;
       }
-      case 0x9: { //RM4 get from check_data
-        const data = Buffer.alloc(1, 0);
-        payload.copy(data, 0, 0x6);
-        //if (data[0] !== 0x1) break;
-        this.emit('rawRFData', data);
-        break;
-      }
-      case 0xb0: { //RM4 get RF from check_data
+      // New Learn RF process can ignore 0x9 packets
+      //case 0x9: { //RM4 get from check_data
+      //  const data = Buffer.alloc(1, 0);
+      //  payload.copy(data, 0, 0x6);
+      //  //if (data[0] !== 0x1) break;
+      //  this.emit('rawRFData', data);
+      //  break;
+      //}
+      case 0xb0: { //RM4 RF Code found
         this.emit('rawData', payload);
         break;
       }
@@ -494,8 +494,7 @@ class Device {
       case 0x1b: { //get from check_data
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x4);
-        //if (data[0] !== 0x1) break; Check removed for RM4 RF Learning. Might need to restore an error check here
-        //this.emit('rawRFData2', data); //Used to stop scanning frequencies as soon as this packed was returned. Now scan for 10 seconds then use this packet to test if it was identified
+        this.emit('rawRFData2', data); //Used to stop scanning frequencies as soon as this packed was returned. Now scan for 10 seconds then use this packet to test if it was identified
         log(`\x1b[35m[INFO]\x1b[0m Frequency identified`);
         break;
       }
