@@ -446,7 +446,7 @@ class Device {
     const param = payload[0];
     const { log, debug } = this;
 
-    if (debug) log('\x1b[33m[DEBUG]\x1b[0m (',this.mac.toString('hex'),') Payload received:', payload.toString('hex'))
+    if (debug) log('\x1b[33m[DEBUG]\x1b[0m (',this.mac.toString('hex'),') Payload received:', payload.toString('hex'));
 
     switch (param) {
       case 0x1: {
@@ -465,6 +465,10 @@ class Device {
         payload.copy(data, 0, 0x6);
         //if (data[0] !== 0x1) break;
         this.emit('rawRFData', data);
+        break;
+      }
+      case 0xb0: { //RM4 get RF from check_data
+        this.emit('rawData', payload);
         break;
       }
       case 0xb1: { //RM4 get RF from check_data
@@ -488,7 +492,8 @@ class Device {
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x4);
         //if (data[0] !== 0x1) break; Check removed for RM4 RF Learning. Might need to restore an error check here
-        this.emit('rawRFData2', data);
+        //this.emit('rawRFData2', data); //Used to stop scanning frequencies as soon as this packed was returned. Now scan for 10 seconds then use this packet to test if it was identified
+        log(`\x1b[35m[INFO]\x1b[0m Frequency identified`);
         break;
       }
       case 0x26: { //get from check_data
