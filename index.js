@@ -492,7 +492,7 @@ class Device {
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x4);
         this.emit('rawRFData2', data); //Used to stop scanning frequencies as soon as this packed was returned. Now scan for 10 seconds then use this packet to test if it was identified
-        log(`\x1b[35m[INFO]\x1b[0m Frequency identified`);
+        //log(`\x1b[35m[INFO]\x1b[0m Frequency identified`);
         break;
       }
       case 0x26: { //get from check_data
