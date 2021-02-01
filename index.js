@@ -463,13 +463,13 @@ class Device {
         break;
       }
       // New Learn RF process can ignore 0x9 packets
-      //case 0x9: { //RM4 get from check_data
-      //  const data = Buffer.alloc(1, 0);
-      //  payload.copy(data, 0, 0x6);
-      //  //if (data[0] !== 0x1) break;
-      //  this.emit('rawRFData', data);
-      //  break;
-      //}
+      case 0x9: { //RM4 get from check_data
+        const data = Buffer.alloc(1, 0);
+        payload.copy(data, 0, 0x6);
+        if (data[0] !== 0x1) break;
+        this.emit('rawRFData', data);
+        break;
+      }
       case 0xb0: 
       case 0xb1: { //RM4 get RF from check_data
         this.emit('rawData', payload);
