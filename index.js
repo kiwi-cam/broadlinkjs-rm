@@ -451,7 +451,7 @@ class Device {
     if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Payload received:${payload.toString('hex')}`);
 
     switch (param) {
-      case 0x1: {
+      case 0x1: { //RM3 Check temperature
         const temp = (payload[0x4] * 10 + payload[0x5]) / 10.0;
         this.emit('temperature', temp);
         break;
@@ -462,8 +462,7 @@ class Device {
         this.emit('rawData', data);
         break;
       }
-      // New Learn RF process can ignore 0x9 packets
-      case 0x9: { //RM4 get from check_data
+      case 0x9: { // Check RF Frequency found from RM4 Pro
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x6);
         if (data[0] !== 0x1) break;
@@ -471,11 +470,11 @@ class Device {
         break;
       }
       case 0xb0: 
-      case 0xb1: { //RM4 get RF from check_data
+      case 0xb1: { //RF Code returned
         this.emit('rawData', payload);
         break;
       }
-      case 0xa: {
+      case 0xa: { //RM3 Check temperature and humidity
         const temp = (payload[0x6] * 100 + payload[0x7]) / 100.0;
         const humidity = (payload[0x8] * 100 + payload[0x9]) / 100.0;
         this.emit('temperature',temp, humidity);
@@ -488,14 +487,14 @@ class Device {
         this.emit('rawRFData', data);
         break;
       }
-      case 0x1b: { //get from check_data
+      case 0x1b: { // Check RF Frequency found from RM Pro
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x4);
-        this.emit('rawRFData2', data); //Used to stop scanning frequencies as soon as this packed was returned. Now scan for 10 seconds then use this packet to test if it was identified
-        //log(`\x1b[35m[INFO]\x1b[0m Frequency identified`);
+        if (data[0] !== 0x1) break; //Check if Fequency identified
+        this.emit('rawRFData2', data); 
         break;
       }
-      case 0x26: { //get from check_data
+      case 0x26: { //get IR code from check_data
         this.emit('rawData', payload);
         break;
       }
