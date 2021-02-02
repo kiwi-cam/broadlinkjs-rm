@@ -490,7 +490,7 @@ class Device {
       case 0x1b: { // Check RF Frequency found from RM Pro
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x4);
-        if (data[0] !== 0x1) break; //Check if Fequency identified
+        if (data[0] !== 0x1 && !this.rm4Type) break; //Check if Fequency identified
         this.emit('rawRFData2', data); 
         break;
       }
