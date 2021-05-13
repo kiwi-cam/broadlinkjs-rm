@@ -133,7 +133,7 @@ class Broadlink extends EventEmitter {
 
     const splitIPAddress = ipAddress.split('.');
     const port = socket.address().port;
-    if (this.logLevel <=2 && log) log(`\x1b[35m[INFO]\x1b[0m Listening for Broadlink devices on ${ipAddress}:${port} (UDP)`);
+    if (debug && log) log(`\x1b[35m[INFO]\x1b[0m Listening for Broadlink devices on ${ipAddress}:${port} (UDP)`);
 
     const now = new Date();
     const starttime = now.getTime();
@@ -320,7 +320,7 @@ class Device {
 
       if (!payload) return false;
 
-      if (this.logLevel <=1 && response) log('\x1b[33m[DEBUG]\x1b[0m Response received: ', response.toString('hex'));
+      if (debug && response) log('\x1b[33m[DEBUG]\x1b[0m Response received: ', response.toString('hex'));
 
       const command = response[0x26];
       if (command == 0xe9) {
@@ -342,9 +342,9 @@ class Device {
         }
         this.onPayloadReceived(err, payload);
       } else if (command == 0x72) {
-        if(this.logLevel <=2) log('\x1b[35m[INFO]\x1b[0m Command Acknowledged');
+        log('\x1b[35m[INFO]\x1b[0m Command Acknowledged');
       } else {
-        if(this.logLevel <=3) log('\x1b[33m[DEBUG]\x1b[0m Unhandled Command: ', command);
+        log('\x1b[33m[DEBUG]\x1b[0m Unhandled Command: ', command);
       }
     });
 
@@ -414,7 +414,7 @@ class Device {
     packet[0x33] = this.id[3];
 
     if (payload){
-      if (this.logLevel <=1) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Sending command:${command.toString(16)} with payload: ${payload.toString('hex')}`);
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Sending command:${command.toString(16)} with payload: ${payload.toString('hex')}`);
       const padPayload = Buffer.alloc(16 - payload.length % 16, 0)
       payload = Buffer.concat([payload, padPayload]);
     }
@@ -442,7 +442,7 @@ class Device {
     packet[0x21] = checksum >> 8;
 
     socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
-      if (this.logLevel <=4 && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err)
+      if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err)
     });
   }
 
@@ -450,7 +450,7 @@ class Device {
     const param = payload[0];
     const { log, debug } = this;
 
-    if (this.logLevel <=1) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Payload received:${payload.toString('hex')}`);
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Payload received:${payload.toString('hex')}`);
 
     switch (param) {
       case 0x1: { //RM3 Check temperature
