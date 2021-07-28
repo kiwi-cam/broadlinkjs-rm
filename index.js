@@ -10,8 +10,9 @@ rmDeviceTypes[parseInt(0x2737, 16)] = "Broadlink RM3 Mini";
 rmDeviceTypes[parseInt(0x6507, 16)] = "Broadlink RM3 Mini";
 rmDeviceTypes[parseInt(0x27c7, 16)] = 'Broadlink RM3 Mini A';
 rmDeviceTypes[parseInt(0x27c2, 16)] = "Broadlink RM3 Mini B";
+rmDeviceTypes[parseInt(0x6508, 16)] = "Broadlink RM3 Mini D";
 rmDeviceTypes[parseInt(0x27de, 16)] = "Broadlink RM3 Mini C";
-rmDeviceTypes[parseInt(0x5f36, 16)] = "Broadlink RM3 Mini D";
+rmDeviceTypes[parseInt(0x5f36, 16)] = "Broadlink RM3 Mini B";
 rmDeviceTypes[parseInt(0x27d3, 16)] = "Broadlink RM3 Mini KR";
 rmDeviceTypes[parseInt(0x273d, 16)] = 'Broadlink RM Pro Phicomm';
 rmDeviceTypes[parseInt(0x2712, 16)] = 'Broadlink RM2';
@@ -270,8 +271,8 @@ class Device {
     this.rm4Type = (rm4DeviceTypes[parseInt(deviceType, 16)] || rm4PlusDeviceTypes[parseInt(deviceType, 16)])
     this.request_header = this.rm4Type ? new Buffer([0x04, 0x00]) : new Buffer([]);
     this.code_sending_header = this.rm4Type ? new Buffer([0xda, 0x00]) : new Buffer([]);
-    //except 5f36 ¯\_(ツ)_/¯
-    if (deviceType == 0x5f36) {
+    //except 5f36 and 6508 ¯\_(ツ)_/¯
+    if (deviceType == 0x5f36 || deviceType == 0x6508) {
       this.code_sending_header = new Buffer([0xd0, 0x00]);
       this.request_header = new Buffer([0x04, 0x00]);
     }
