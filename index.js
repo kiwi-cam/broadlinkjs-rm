@@ -53,6 +53,7 @@ rm4PlusDeviceTypes[parseInt(0x6026, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x61a2, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x649b, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x653c, 16)] = "Broadlink RM4 Pro";
+rm4PlusDeviceTypes[parseInt(0x6184, 16)] = "Broadlink RM4C Pro";
 rm4PlusDeviceTypes[parseInt(0x2227, 16)] = 'Manual RM4 Pro Device';
 
 // Known Unsupported Devices
