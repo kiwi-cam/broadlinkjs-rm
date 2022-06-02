@@ -120,7 +120,7 @@ class Broadlink extends EventEmitter {
       const currentInterface = interfaces[interfaceID];
 
       currentInterface.forEach((address) => {
-        if (address.family === 'IPv4' && !address.internal) {
+        if ((address.family === 'IPv4' || address.family === 4) && !address.internal) {
           ipAddresses.push(address.address);
         }
       })
