@@ -46,6 +46,7 @@ rm4DeviceTypes[parseInt(0x610f, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x6539, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x648d, 16)] = "Broadlink RM4 Mini S";
 rm4DeviceTypes[parseInt(0x5216, 16)] = "Broadlink RM4 Mini";
+rm4DeviceTypes[parseInt(0x520c, 16)] = "Broadlink RM4 Mini";
 rm4DeviceTypes[parseInt(0x2225, 16)] = 'Manual RM4 Device';
 
 // RM4 Devices (with RF support)
@@ -55,6 +56,7 @@ rm4PlusDeviceTypes[parseInt(0x6026, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x61a2, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x649b, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x653c, 16)] = "Broadlink RM4 Pro";
+rm4PlusDeviceTypes[parseInt(0x520b, 16)] = "Broadlink RM4 Pro";
 rm4PlusDeviceTypes[parseInt(0x6184, 16)] = "Broadlink RM4C Pro";
 rm4PlusDeviceTypes[parseInt(0x2227, 16)] = 'Manual RM4 Pro Device';
 
