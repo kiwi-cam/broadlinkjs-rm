@@ -90,9 +90,11 @@ class Broadlink extends EventEmitter {
 
     this.devices = {};
     this.sockets = [];
-    // The UDP port to listen on when discovering Broadlink devices
+    // The UDP port to listen on when discovering Broadlink devices. A value of 0 will use a randomly selected free port.
     this.discoveryPort = 0;
-    // The IP address range to broadcast for discovery. For container use the IP range of the host network (e.g. 192.168.0.255).
+    // The IP address range to broadcast for discovery. 
+    // When using the module within a (Docker) container use the IP range of the host's network 
+    // (e.g. On a Docker host with an IP of 192.168.0.21 use a value of 192.168.0.255).
     this.broadcastAddress = '255.255.255.255';
   }
 
