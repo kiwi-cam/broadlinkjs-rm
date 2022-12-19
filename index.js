@@ -90,6 +90,10 @@ class Broadlink extends EventEmitter {
 
     this.devices = {};
     this.sockets = [];
+    // The UDP port to listen on when discovering Broadlink devices
+    this.discoveryPort = 0;
+    // The IP address range to broadcast for discovery. For container use the IP range of the host network (e.g. 192.168.0.255).
+    this.broadcastAddress = '255.255.255.255';
   }
 
   discover() {
@@ -110,7 +114,7 @@ class Broadlink extends EventEmitter {
       socket.on('listening', this.onListening.bind(this, socket, ipAddress));
       socket.on('message', this.onMessage.bind(this));
 
-      socket.bind(0, ipAddress);
+      socket.bind(this.discoveryPort, ipAddress);
     });
   }
 
@@ -189,7 +193,8 @@ class Broadlink extends EventEmitter {
     packet[0x20] = checksum & 0xff;
     packet[0x21] = checksum >> 8;
 
-    socket.sendto(packet, 0, packet.length, 80, '255.255.255.255');
+    if (log && debug) log(`\x1b[35m[DEBUG]\x1b[0m Broadcasting device discovery to IP range ${this.broadcastAddress}`);
+    socket.sendto(packet, 0, packet.length, 80, this.broadcastAddress);
   }
 
   onMessage (message, host) {
