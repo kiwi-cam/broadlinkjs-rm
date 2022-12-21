@@ -96,8 +96,8 @@ class Broadlink extends EventEmitter {
     // When using the module within a (Docker) container use the IP range of the host's network 
     // (e.g. On a Docker host with an IP of 192.168.0.21 use a value of 192.168.0.255).
     this.broadcastAddress = '255.255.255.255';
-    // If you are using this module with Kubernetes set multicast to true to be able to find devices on the host network.
-    // This is needed as most Kubernetes distributions will not allow broadcast messages.
+    // If you are using this module with Kubernetes (or another container management system) set multicast to true to be able to find devices on the host's network.
+    // This is needed as most Kubernetes distributions do not suport broadcast messages as they consider UDP broadcasting to be a major network security risk.
     this.multicast = false;
   }
 
@@ -143,8 +143,8 @@ class Broadlink extends EventEmitter {
   onListening (socket, ipAddress) {
     const { debug, log } = this;
 
-    // Broadcase a multicast UDP message to let Broadlink devices know we're listening
     if(!this.multicast){
+      // Broadcase a multicast UDP message to let Broadlink devices know we're listening
       socket.setBroadcast(true);  
     }
 
@@ -202,8 +202,8 @@ class Broadlink extends EventEmitter {
 
     if(this.multicast){
       // Multicast mode
-      if (log && debug) log(`\x1b[35m[DEBUG]\x1b[0m Multicasting device discovery to IP range: ${multicastAddress}`);
       const ipRange = this.broadcastAddress.substring(0, this.broadcastAddress.lastIndexOf(".") + 1);
+      if (log && debug) log(`\x1b[35m[DEBUG]\x1b[0m Multicasting device discovery to IP range: ${ipRange + 'XXX'}`);
 
       for (let index = 1; index < 256; index++) {
         let multicastAddress = ipRange + index.toString();        
