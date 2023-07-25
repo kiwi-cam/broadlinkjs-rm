@@ -91,6 +91,15 @@ class Broadlink extends EventEmitter {
 
     this.devices = {};
     this.sockets = [];
+    // The UDP port to listen on when discovering Broadlink devices. A value of 0 will use a randomly selected free port.
+    this.discoveryPort = 0;
+    // The IP address range to broadcast for discovery. 
+    // When using the module within a (Docker) container use the IP range of the host's network 
+    // (e.g. On a Docker host with an IP of 192.168.0.21 use a value of 192.168.0.255).
+    this.broadcastAddress = '255.255.255.255';
+    // If you are using this module with Kubernetes (or another container management system) set multicast to true to be able to find devices on the host's network.
+    // This is needed as most Kubernetes distributions do not suport broadcast messages as they consider UDP broadcasting to be a major network security risk.
+    this.multicast = false;
   }
 
   discover() {
@@ -111,7 +120,7 @@ class Broadlink extends EventEmitter {
       socket.on('listening', this.onListening.bind(this, socket, ipAddress));
       socket.on('message', this.onMessage.bind(this));
 
-      socket.bind(0, ipAddress);
+      socket.bind(this.discoveryPort, ipAddress);
     });
   }
 
@@ -135,8 +144,10 @@ class Broadlink extends EventEmitter {
   onListening (socket, ipAddress) {
     const { debug, log } = this;
 
-    // Broadcase a multicast UDP message to let Broadlink devices know we're listening
-    socket.setBroadcast(true);
+    if(!this.multicast){
+      // Broadcase a multicast UDP message to let Broadlink devices know we're listening
+      socket.setBroadcast(true);  
+    }
 
     const splitIPAddress = ipAddress.split('.');
     const port = socket.address().port;
@@ -190,7 +201,20 @@ class Broadlink extends EventEmitter {
     packet[0x20] = checksum & 0xff;
     packet[0x21] = checksum >> 8;
 
-    socket.sendto(packet, 0, packet.length, 80, '255.255.255.255');
+    if(this.multicast){
+      // Multicast mode
+      const ipRange = this.broadcastAddress.substring(0, this.broadcastAddress.lastIndexOf(".") + 1);
+      if (log && debug) log(`\x1b[35m[DEBUG]\x1b[0m Multicasting device discovery to IP range: ${ipRange + 'XXX'}`);
+
+      for (let index = 1; index < 256; index++) {
+        let multicastAddress = ipRange + index.toString();        
+        socket.sendto(packet, 0, packet.length, 80, multicastAddress);
+      }
+    }else{
+      // Broadcast mode
+      if (log && debug) log(`\x1b[35m[DEBUG]\x1b[0m Broadcasting device discovery to IP range ${this.broadcastAddress}`);
+      socket.sendto(packet, 0, packet.length, 80, this.broadcastAddress);
+    }
   }
 
   onMessage (message, host) {
