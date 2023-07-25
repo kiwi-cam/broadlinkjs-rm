@@ -44,6 +44,7 @@ rm4DeviceTypes[parseInt(0x6070, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x62be, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x610f, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x6539, 16)] = "Broadlink RM4 Mini C";
+rm4DeviceTypes[parseInt(0x520d, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x648d, 16)] = "Broadlink RM4 Mini S";
 rm4DeviceTypes[parseInt(0x5216, 16)] = "Broadlink RM4 Mini";
 rm4DeviceTypes[parseInt(0x520c, 16)] = "Broadlink RM4 Mini";
