@@ -470,7 +470,8 @@ class Device {
         this.emit('rawData', data);
         break;
       }
-      case 0x9: { // Check RF Frequency found from RM4 Pro
+    case 0x9: { // Check RF Frequency found from RM4 Pro
+        if (debug) log(`\x1b[33m[DEBUG]\x1b[0m (${this.mac.toString('hex')}) Scanning ${payload.readUint32LE(7)/1000} MHz`)
         const data = Buffer.alloc(1, 0);
         payload.copy(data, 0, 0x6);
         if (data[0] !== 0x1) break;
@@ -568,9 +569,19 @@ class Device {
       this.sendPacket(0x6a, packet);
     }
 
-    this.checkRFData2 = () => {
-      let packet = new Buffer([0x1b]);
-      packet = Buffer.concat([this.request_header, packet]);
+    this.checkRFData2 = (frequency = undefined) => {
+      // let packet = new Buffer([0x1b]);
+      // packet = Buffer.concat([this.request_header, packet]);
+      let packet = new Buffer.from([0x1b, 0x00, 0x00, 0x00]);
+      let header = Buffer.alloc(this.request_header.length);
+      this.request_header.copy(header); 
+      if (frequency) {
+	const data = Buffer.alloc(4, 0);
+	data.writeUint32LE(Math.round(frequency * 1000));
+	packet = Buffer.concat([packet, data]);
+	if (this.request_header.length) header.writeUint16LE(8);
+      }
+      packet = Buffer.concat([header, packet]);
       this.sendPacket(0x6a, packet);
     }
   }
