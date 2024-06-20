@@ -482,6 +482,7 @@ class Device {
       case 0xa9:
       case 0xb0: 
       case 0xb1: 
+      case 0xd7: //RF Code returned
       case 0xb2: { //RF Code returned
         this.emit('rawData', payload);
         break;
