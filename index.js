@@ -388,7 +388,7 @@ class Device {
     this.sendPacket(0x65, payload);
   }
 
-  sendPacket (command, payload, debug = false) {
+  async sendPacket (command, payload, debug = false) {
     const { log, socket } = this;
     debug = this.debug;
     this.count = (this.count + 1) & 0xffff;
@@ -446,9 +446,12 @@ class Device {
     checksum = checksum & 0xffff;
     packet[0x20] = checksum & 0xff;
     packet[0x21] = checksum >> 8;
-
-    socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
-      if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err)
+    await new Promise(resolve => {
+      socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
+	// if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err);
+	if (err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err);
+	resolve();
+      });
     });
   }
 
@@ -480,6 +483,7 @@ class Device {
       case 0xa9:
       case 0xb0: 
       case 0xb1: 
+      case 0xd7: //RF Code returned
       case 0xb2: { //RF Code returned
         this.emit('rawData', payload);
         break;
@@ -525,10 +529,10 @@ class Device {
     this.sendPacket(0x6a, packet);
   }
 
-  sendData (data, debug = false) {
+  async sendData (data, debug = false) {
     let packet = new Buffer([0x02, 0x00, 0x00, 0x00]);
     packet = Buffer.concat([this.code_sending_header, packet, data]);
-    this.sendPacket(0x6a, packet, debug);
+    await this.sendPacket(0x6a, packet, debug);
   }
 
   enterLearning() {
