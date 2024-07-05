@@ -44,6 +44,7 @@ rm4DeviceTypes[parseInt(0x6070, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x62be, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x610f, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x6539, 16)] = "Broadlink RM4 Mini C";
+rm4DeviceTypes[parseInt(0x520d, 16)] = "Broadlink RM4 Mini C";
 rm4DeviceTypes[parseInt(0x648d, 16)] = "Broadlink RM4 Mini S";
 rm4DeviceTypes[parseInt(0x5216, 16)] = "Broadlink RM4 Mini";
 rm4DeviceTypes[parseInt(0x520c, 16)] = "Broadlink RM4 Mini";
@@ -208,6 +209,12 @@ class Broadlink extends EventEmitter {
     if (this.devices[key]) return;
 
     const deviceType = message[0x34] | (message[0x35] << 8);
+    const isLocked  = message[0x7F] ? true : false;
+    if (isLocked) {
+      this.devices[key] = 'Not Supported';
+      console.log(`\x1b[35m[INFO]\x1b[0m Found \x1b[33mLocked\x1b[0m device ${key} with type ${deviceType.toString(16)}. Unlock to control.`);
+      return;
+    }
 
     // Create a Device instance
     this.addDevice(host, macAddress, deviceType);
