@@ -209,6 +209,12 @@ class Broadlink extends EventEmitter {
     if (this.devices[key]) return;
 
     const deviceType = message[0x34] | (message[0x35] << 8);
+    const isLocked  = message[0x7F] ? true : false;
+    if (isLocked) {
+      this.devices[key] = 'Not Supported';
+      console.log(`\x1b[35m[INFO]\x1b[0m Found \x1b[33mLocked\x1b[0m device ${key} with type ${deviceType.toString(16)}. Unlock to control.`);
+      return;
+    }
 
     // Create a Device instance
     this.addDevice(host, macAddress, deviceType);
@@ -217,7 +223,7 @@ class Broadlink extends EventEmitter {
   addDevice (host, macAddress, deviceType) {
     const { log, debug } = this;
 
-    if (this.devices[macAddress]) return;
+    if (this.devices[macAddress.toString('hex')]) return;
 
     const isHostObjectValid = (
       typeof host === 'object' &&
@@ -231,7 +237,7 @@ class Broadlink extends EventEmitter {
 
     // Mark is at not supported by default so we don't try to
     // create this device again.
-    this.devices[macAddress] = 'Not Supported';
+    this.devices[macAddress.toString('hex')] = 'Not Supported';
 
     // Ignore devices that don't support infrared or RF.
     if (unsupportedDeviceTypes[parseInt(deviceType, 16)]) return null;
@@ -252,7 +258,7 @@ class Broadlink extends EventEmitter {
     device.log = log;
     device.debug = debug;
 
-    this.devices[macAddress] = device;
+    this.devices[macAddress.toString('hex')] = device;
 
     // Authenticate the device and let others know when it's ready.
     device.on('deviceReady', () => {
@@ -388,7 +394,7 @@ class Device {
     this.sendPacket(0x65, payload);
   }
 
-  sendPacket (command, payload, debug = false) {
+  async sendPacket (command, payload, debug = false) {
     const { log, socket } = this;
     debug = this.debug;
     this.count = (this.count + 1) & 0xffff;
@@ -408,12 +414,12 @@ class Device {
     packet[0x26] = command;
     packet[0x28] = this.count & 0xff;
     packet[0x29] = this.count >> 8;
-    packet[0x2a] = this.mac[2]
-    packet[0x2b] = this.mac[1]
-    packet[0x2c] = this.mac[0]
-    packet[0x2d] = this.mac[3]
-    packet[0x2e] = this.mac[4]
-    packet[0x2f] = this.mac[5]
+    packet[0x2a] = this.mac[5]
+    packet[0x2b] = this.mac[4]
+    packet[0x2c] = this.mac[3]
+    packet[0x2d] = this.mac[2]
+    packet[0x2e] = this.mac[1]
+    packet[0x2f] = this.mac[0]
     packet[0x30] = this.id[0];
     packet[0x31] = this.id[1];
     packet[0x32] = this.id[2];
@@ -446,9 +452,12 @@ class Device {
     checksum = checksum & 0xffff;
     packet[0x20] = checksum & 0xff;
     packet[0x21] = checksum >> 8;
-
-    socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
-      if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err)
+    await new Promise(resolve => {
+      socket.send(packet, 0, packet.length, this.host.port, this.host.address, (err, bytes) => {
+	// if (debug && err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err);
+	if (err) log('\x1b[33m[DEBUG]\x1b[0m send packet error', err);
+	resolve();
+      });
     });
   }
 
@@ -480,6 +489,7 @@ class Device {
       case 0xa9:
       case 0xb0: 
       case 0xb1: 
+      case 0xd7: //RF Code returned
       case 0xb2: { //RF Code returned
         this.emit('rawData', payload);
         break;
@@ -525,10 +535,10 @@ class Device {
     this.sendPacket(0x6a, packet);
   }
 
-  sendData (data, debug = false) {
+  async sendData (data, debug = false) {
     let packet = new Buffer([0x02, 0x00, 0x00, 0x00]);
     packet = Buffer.concat([this.code_sending_header, packet, data]);
-    this.sendPacket(0x6a, packet, debug);
+    await this.sendPacket(0x6a, packet, debug);
   }
 
   enterLearning() {
