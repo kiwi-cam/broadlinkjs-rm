@@ -210,11 +210,12 @@ class Broadlink extends EventEmitter {
 
     const deviceType = message[0x34] | (message[0x35] << 8);
     const isLocked  = message[0x7F] ? true : false;
-    if (isLocked) {
-      this.devices[key] = 'Not Supported';
-      console.log(`\x1b[35m[INFO]\x1b[0m Found \x1b[33mLocked\x1b[0m device ${key} with type ${deviceType.toString(16)}. Unlock to control.`);
-      return;
-    }
+    // Issue with this currently where devices are not being added
+    //if (isLocked) {
+    //  this.devices[key] = 'Not Supported';
+    //  console.log(`\x1b[35m[INFO]\x1b[0m Found \x1b[33mLocked\x1b[0m device ${key} with type ${deviceType.toString(16)}. Unlock to control.`);
+    //  return;
+    //}
 
     // Create a Device instance
     this.addDevice(host, macAddress, deviceType);
