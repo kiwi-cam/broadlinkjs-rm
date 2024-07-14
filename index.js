@@ -8,6 +8,7 @@ const assert = require('assert');
 const rmDeviceTypes = {};
 rmDeviceTypes[parseInt(0x2737, 16)] = "Broadlink RM3 Mini";
 rmDeviceTypes[parseInt(0x6507, 16)] = "Broadlink RM3 Mini";
+rmDeviceTypes[parseInt(0x27d0, 16)] = "Broadlink RM3 Mini";
 rmDeviceTypes[parseInt(0x27c7, 16)] = 'Broadlink RM3 Mini A';
 rmDeviceTypes[parseInt(0x27c2, 16)] = "Broadlink RM3 Mini B";
 rmDeviceTypes[parseInt(0x6508, 16)] = "Broadlink RM3 Mini D";
