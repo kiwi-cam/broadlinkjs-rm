@@ -394,6 +394,20 @@ class Device {
     payload[0x36] = '1'.charCodeAt(0);
 
     this.sendPacket(0x65, payload);
+
+    // A lost auth UDP packet (normal on flaky WiFi IoT devices) previously
+    // hung 'deviceReady' forever with no error, since nothing here ever
+    // retried or timed out. Retry a few times until this.key is set by a
+    // successful auth response.
+    this._authAttempts = (this._authAttempts || 0) + 1;
+    if (this._authAttempts <= 5) {
+      clearTimeout(this._authRetryTimer);
+      this._authRetryTimer = setTimeout(() => {
+        if (!this.key) this.authenticate();
+      }, 3000);
+    } else if (this.log) {
+      this.log(`\x1b[31m[ERROR]\x1b[0m Broadlink device at ${this.host.address} did not respond to authentication after 5 attempts.`);
+    }
   }
 
   async sendPacket (command, payload, debug = false) {
